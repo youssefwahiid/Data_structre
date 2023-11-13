@@ -1,1 +1,83 @@
+/*
+ ============================================================================
+ Name        : fifo.c
+ Author      : youssef wahiid
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent Queue
+typedef struct {
+    unsigned int size;
+    unsigned int* data;
+    int front;
+    int rear;
+} Queue;
+
+// Function declarations
+void queueInit(Queue* queue, unsigned int size);
+void enqueue(Queue* queue, unsigned int item);
+void dequeue(Queue* queue, unsigned int* item);
+
+int main() {
+    Queue myQueue;
+    queueInit(&myQueue, 5);
+
+    for (int i = 0; i < 5; i++) {
+        enqueue(&myQueue, i);
+        printf("Enqueued: %d\n", i);
+    }
+
+    for (int i = 0; i < 5; i++) {
+        unsigned int temp;
+        dequeue(&myQueue, &temp);
+        printf("Dequeued: %d\n", temp);
+    }
+
+    free(myQueue.data); // Don't forget to free dynamically allocated memory
+    return 0;
+}
+
+// Initialize Queue
+void queueInit(Queue* queue, unsigned int size) {
+    queue->size = size;
+    queue->data = (unsigned int*)malloc(size * sizeof(unsigned int));
+    queue->front = -1;
+    queue->rear = -1;
+}
+
+// Enqueue operation
+void enqueue(Queue* queue, unsigned int item) {
+    if (queue->rear == queue->size - 1) {
+        printf("Queue is full. Cannot enqueue.\n");
+        return;
+    }
+
+    if (queue->front == -1) {
+        queue->front = 0; // Set front for the first enqueue
+    }
+
+    queue->data[++queue->rear] = item;
+}
+
+// Dequeue operation
+void dequeue(Queue* queue, unsigned int* item) {
+    if (queue->front == -1) {
+        printf("Queue is empty. Cannot dequeue.\n");
+        return;
+    }
+
+    *item = queue->data[queue->front++];
+
+    // Reset front and rear when the last element is dequeued
+    if (queue->front > queue->rear) {
+        queue->front = -1;
+        queue->rear = -1;
+    }
+}
 
