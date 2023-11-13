@@ -1,0 +1,67 @@
+/*
+ * lifo.c
+ *
+ *  Created on: Nov 13, 2023
+ *      Author: youssef_wahid
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent LIFO buffer
+typedef struct {
+    unsigned int size;
+    unsigned int* data;
+    int top;
+} Lifo;
+
+// Function declarations
+void lifoInit(Lifo* lifo, unsigned int size);
+void lifoAdd(Lifo* lifo, unsigned int item);
+void lifoGet(Lifo* lifo, unsigned int* item);
+
+int main() {
+    Lifo lifo1;
+    lifoInit(&lifo1, 5);
+
+    for (int i = 0; i < 5; i++) {
+        lifoAdd(&lifo1, i);
+        printf("Lifo1 add: %d\n", i);
+    }
+
+    for (int i = 0; i < 5; i++) {
+        unsigned int temp;
+        lifoGet(&lifo1, &temp);
+        printf("Lifo1 get: %d\n", temp);
+    }
+
+    free(lifo1.data); // Don't forget to free dynamically allocated memory
+    return 0;
+}
+
+// Initialize LIFO buffer
+void lifoInit(Lifo* lifo, unsigned int size) {
+    lifo->size = size;
+    lifo->data = (unsigned int*)malloc(size * sizeof(unsigned int));
+    lifo->top = -1;
+}
+
+// Push operation
+void lifoAdd(Lifo* lifo, unsigned int item) {
+    if (lifo->top == lifo->size - 1) {
+        printf("Overflow\n");
+        return;
+    }
+
+    lifo->data[++lifo->top] = item;
+}
+
+// Pop operation
+void lifoGet(Lifo* lifo, unsigned int* item) {
+    if (lifo->top == -1) {
+        printf("Underflow\n");
+        return;
+    }
+
+    *item = lifo->data[lifo->top--];
+}
