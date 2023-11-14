@@ -1,1 +1,161 @@
+/*
+ * linked_list.c
+ *
+ *  Created on: Nov 13, 2023
+ *      Author: youssef_wahid
+ */
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Student {
+    int ID;
+    char name[40];
+    float height;
+    struct Student* next;
+};
+
+struct Student* firstStudent = NULL;
+
+void AddStudent() {
+    struct Student* newStudent = (struct Student*)malloc(sizeof(struct Student));
+    if (newStudent == NULL) {
+        printf("Memory allocation failed.\n");
+        return;
+    }
+
+    char temp_text[40];
+    printf("\nEnter the ID: ");
+    fgets(temp_text, sizeof(temp_text), stdin);
+    newStudent->ID = atoi(temp_text);
+
+    printf("Enter student full name: ");
+    fgets(newStudent->name, sizeof(newStudent->name), stdin);
+    newStudent->name[strcspn(newStudent->name, "\n")] = '\0'; // Removing newline
+
+    printf("Enter the height: ");
+    fgets(temp_text, sizeof(temp_text), stdin);
+    newStudent->height = atof(temp_text);
+
+    newStudent->next = NULL;
+
+    if (firstStudent == NULL) {
+        firstStudent = newStudent;
+    } else {
+        struct Student* current = firstStudent;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newStudent;
+    }
+}
+
+int DeleteStudent() {
+    if (firstStudent == NULL) {
+        printf("Empty list. No student to delete.\n");
+        return 0;
+    }
+
+    int selected_id;
+    printf("\nEnter the student ID to be deleted: ");
+    scanf("%d", &selected_id);
+
+    struct Student* current = firstStudent;
+    struct Student* prev = NULL;
+
+    while (current != NULL) {
+        if (current->ID == selected_id) {
+            if (prev == NULL) {
+                firstStudent = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            printf("Student ID %d deleted successfully.\n", selected_id);
+            return 1;
+        }
+        prev = current;
+        current = current->next;
+    }
+
+    printf("Student ID %d not found.\n", selected_id);
+    return 0;
+}
+
+void ViewStudents() {
+    if (firstStudent == NULL) {
+        printf("Empty list. No students to display.\n");
+        return;
+    }
+
+    int count = 0;
+    struct Student* current = firstStudent;
+    while (current != NULL) {
+        printf("\nRecord number %d\n", ++count);
+        printf("\tID: %d\n", current->ID);
+        printf("\tName: %s\n", current->name);
+        printf("\tHeight: %.2f\n", current->height);
+        current = current->next;
+    }
+}
+
+void DeleteAll() {
+    struct Student* current = firstStudent;
+    struct Student* temp;
+
+    while (current != NULL) {
+        temp = current->next;
+        free(current);
+        current = temp;
+    }
+
+    firstStudent = NULL;
+    printf("All students deleted.\n");
+}
+
+void mainMenu() {
+    char temp_text[40];
+    int option;
+
+    while (1) {
+        printf("\n===============\n");
+        printf("\t Choose one of the following options:\n");
+        printf(" 1: Add Student\n");
+        printf(" 2: Delete Student\n");
+        printf(" 3: View Students\n");
+        printf(" 4: Delete All Students\n");
+        printf(" 5: Exit\n");
+        printf(" Enter Option Number: ");
+
+        fgets(temp_text, sizeof(temp_text), stdin);
+        option = atoi(temp_text);
+
+        printf("===============\n");
+        switch (option) {
+            case 1:
+                AddStudent();
+                break;
+            case 2:
+                DeleteStudent();
+                break;
+            case 3:
+                ViewStudents();
+                break;
+            case 4:
+                DeleteAll();
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Wrong option. Please enter a valid option.\n");
+                break;
+        }
+    }
+}
+
+int main() {
+    mainMenu();
+    return 0;
+}
